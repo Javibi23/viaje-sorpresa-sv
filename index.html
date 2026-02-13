@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nuestra Próxima Aventura</title>
+<title>Nuestro Próximo Capricho</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
 
 <style>
@@ -22,10 +22,18 @@ body{
     width:90%;
     max-width:800px;
     text-align:center;
+    animation:fade 0.8s ease;
 }
 
 h1,h2{
     font-family:'Playfair Display', serif;
+}
+
+.riddle{
+    font-style:italic;
+    margin-bottom:25px;
+    opacity:0.9;
+    line-height:1.6;
 }
 
 .card{
@@ -49,6 +57,19 @@ button{
     font-size:16px;
     cursor:pointer;
     margin-top:15px;
+}
+
+input{
+    padding:10px;
+    border-radius:20px;
+    border:none;
+    width:200px;
+    text-align:center;
+}
+
+@keyframes fade{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
 }
 </style>
 </head>
@@ -81,14 +102,26 @@ function showQuestion(){
 
     if(question === 1){
         quiz.innerHTML = `
-            <h2>¿Cuánto tiempo escapamos?</h2>
+            <div class="riddle">
+            No se compra, no se guarda,<br>
+            pero cuando lo tienes… vuela.<br>
+            A veces es breve y eterno a la vez.<br><br>
+            ¿Cuánto queremos que dure el nuestro?
+            </div>
+            <h2>¿Cuánto tiempo nos vamos?</h2>
             <div class="card" onclick="selectAnswer('1dia')">🌙 Un día mágico</div>
-            <div class="card" onclick="selectAnswer('masdias')">🌄 Dos días o más</div>
+            <div class="card" onclick="selectAnswer('masdias')">🌄 Dos días</div>
         `;
     }
 
     else if(question === 2){
         quiz.innerHTML = `
+            <div class="riddle">
+            Puede tener ruedas o alas,<br>
+            puede seguir raíles o nubes.<br>
+            No importa cómo…<br>
+            lo importante es avanzar juntos.
+            </div>
             <h2>¿Cómo viajamos?</h2>
             <div class="card" onclick="selectAnswer('coche')">🚗 A nuestro ritmo</div>
             <div class="card" onclick="selectAnswer('tren')">🚆 En tren</div>
@@ -98,6 +131,12 @@ function showQuestion(){
 
     else if(question === 3){
         quiz.innerHTML = `
+            <div class="riddle">
+            Al abrir los ojos,<br>
+            lo primero que veamos<br>
+            marcará cómo empieza el día.<br><br>
+            ¿Miramos hacia arriba… o hacia el horizonte?
+            </div>
             <h2>¿Qué miramos al despertar?</h2>
             <div class="card" onclick="selectAnswer('cielo')">🌌 El cielo</div>
             <div class="card" onclick="selectAnswer('montana')">⛰ La montaña</div>
@@ -106,6 +145,12 @@ function showQuestion(){
 
     else if(question === 4){
         quiz.innerHTML = `
+            <div class="riddle">
+            No es cuestión de dinero,<br>
+            sino de cómo se siente.<br>
+            Puede ser elegante…<br>
+            o absolutamente inolvidable.
+            </div>
             <h2>Nivel de experiencia</h2>
             <div class="card" onclick="selectAnswer('lujoso')">✨ Lujoso</div>
             <div class="card" onclick="selectAnswer('lujazo')">👑 Lujazo</div>
@@ -113,7 +158,7 @@ function showQuestion(){
     }
 
     else if(question === 5){
-        showRiddle();
+        showRiddleFinal();
     }
 }
 
@@ -137,17 +182,19 @@ function calculate(answer){
     }
 }
 
-function showRiddle(){
+function showRiddleFinal(){
     document.getElementById("quiz").innerHTML=`
-        <h2>🔐 Para descubrir el destino...</h2>
-        <p>No tengo boca pero puedo hablar,<br>
+        <h2>🔐 Antes de descubrirlo...</h2>
+        <div class="riddle">
+        No tengo boca pero puedo hablar,<br>
         no tengo alas pero puedo volar.<br><br>
         Si me compartes, crezco.<br>
         Si me guardas, muero.<br><br>
-        ¿Qué soy?</p>
+        ¿Qué soy?
+        </div>
         <input id="password" placeholder="Escribe la respuesta">
         <br>
-        <button onclick="checkPassword()">Descubrir</button>
+        <button onclick="checkPassword()">Descubrir destino</button>
     `;
 }
 
@@ -171,7 +218,7 @@ function showResults(){
 
     destinations.sort((a,b)=>b.score-a.score);
 
-    let html=`<h2>🏆 Tu ranking de destinos</h2>`;
+    let html=`<h2>🏆 Tu ranking de destinos, ¿Estás segura de tus decisiones?</h2>`;
 
     destinations.forEach((d,i)=>{
         let medal=["🥇","🥈","🥉","💔"][i];
