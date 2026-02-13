@@ -19,7 +19,6 @@ body{
     background-position:center;
     transition:background-image 1s ease;
 }
-
 .overlay{
     position:absolute;
     width:100%;
@@ -27,7 +26,6 @@ body{
     background:rgba(0,0,0,0.55);
     z-index:0;
 }
-
 .container{
     position:relative;
     width:90%;
@@ -36,18 +34,15 @@ body{
     animation:fade 0.8s ease;
     z-index:2;
 }
-
 h1,h2{
     font-family:'Playfair Display', serif;
 }
-
 .riddle{
     font-style:italic;
     margin-bottom:25px;
     opacity:0.95;
     line-height:1.6;
 }
-
 .card{
     background: rgba(255,255,255,0.12);
     padding:20px;
@@ -56,12 +51,10 @@ h1,h2{
     cursor:pointer;
     transition:0.3s;
 }
-
 .card:hover{
     background: rgba(255,255,255,0.25);
     transform:scale(1.05);
 }
-
 button{
     padding:12px 25px;
     border-radius:30px;
@@ -70,7 +63,6 @@ button{
     cursor:pointer;
     margin-top:15px;
 }
-
 input{
     padding:10px;
     border-radius:20px;
@@ -78,21 +70,55 @@ input{
     width:200px;
     text-align:center;
 }
-
-.cinematic h1{
-    font-size:48px;
-    margin-top:30px;
-    animation:fadeIn 2s ease forwards;
+/* 🔒 Botón candado */
+.lock-btn{
+    position:absolute;
+    top:20px;
+    right:20px;
+    font-size:18px;
+    padding:10px 18px;
+    border-radius:30px;
+    background:rgba(0,0,0,0.6);
+    border:1px solid rgba(255,255,255,0.3);
+    cursor:pointer;
+    z-index:3;
+    transition:0.3s;
 }
-
+.lock-btn:hover{
+    background:rgba(255,0,0,0.6);
+    transform:scale(1.05);
+}
+/* 💬 Modal */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.8);
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+.modal-content{
+    background:#111;
+    padding:40px;
+    border-radius:20px;
+    max-width:400px;
+    text-align:center;
+}
+.modal button{
+    margin:10px;
+}
+#winner-img{
+    max-width:100%;
+    border-radius:20px;
+    margin-top:20px;
+}
 @keyframes fade{
     from{opacity:0; transform:translateY(20px);}
     to{opacity:1; transform:translateY(0);}
-}
-
-@keyframes fadeIn{
-    from{opacity:0;}
-    to{opacity:1;}
 }
 </style>
 </head>
@@ -106,8 +132,23 @@ input{
     <button onclick="startQuiz()">Empezar</button>
 </div>
 
-<script>
+<!-- Modal -->
+<div class="modal" id="warningModal">
+    <div class="modal-content">
+        <h2>🔐 ¿Seguro?</h2>
+        <p>
+        Esto se desbloqueará solo si no quieres ver el resultado final.<br><br>
+        Si es así continúa y nada de lo que has decidido tendrá valor...<br><br>
+        <strong>Tú decides.</strong>
+        </p>
+        <button onclick="closeModal()">Volver</button>
+        <button onclick="forceReveal()">Continuar</button>
+    </div>
+</div>
 
+<script>
+// Variables globales
+let destinationsGlobal = [];
 let question = 1;
 
 let scores = {
@@ -117,13 +158,17 @@ let scores = {
     burgo:0
 };
 
+// Fondos
 const backgrounds = {
     inicio:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
     tiempo:"https://images.unsplash.com/photo-1491553895911-0055eca6402d",
     transporte:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    norteSur:"https://images.unsplash.com/photo-1501785888041-af3ef285b470",
     cielo:"https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
     montana:"https://images.unsplash.com/photo-1501785888041-af3ef285b470",
     lujo:"https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+    comida:"https://images.unsplash.com/photo-1504674900247-0877df9cc836",
+    estilo:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80",
     misterio:"https://images.unsplash.com/photo-1500534623283-312aade485b7"
 };
 
@@ -139,97 +184,133 @@ function startQuiz(){
 }
 
 function showQuestion(){
-
     const quiz = document.getElementById("quiz");
 
-    if(question === 1){
-        setBackground("tiempo");
-        quiz.innerHTML = `
+    switch(question){
+        case 1:
+            setBackground("tiempo");
+            quiz.innerHTML=`
             <div class="riddle">
             No se compra, no se guarda,<br>
             pero cuando lo tienes… vuela.<br><br>
             ¿Cuánto queremos que dure el nuestro?
             </div>
             <h2>¿Cuánto tiempo nos vamos?</h2>
-            <div class="card" onclick="selectAnswer('1dia')">🌙 Un día mágico</div>
-            <div class="card" onclick="selectAnswer('masdias')">🌄 Dos días</div>
-        `;
-    }
-
-    else if(question === 2){
-        setBackground("transporte");
-        quiz.innerHTML = `
+            <div class="card" onclick="selectAnswer('1noche')">🌙 1 noche</div>
+            <div class="card" onclick="selectAnswer('2noches')">🌄 2 noches</div>
+            `;
+            break;
+        case 2:
+            setBackground("transporte");
+            quiz.innerHTML=`
             <div class="riddle">
             Puede tener ruedas o alas,<br>
-            puede seguir raíles o nubes.<br>
-            No importa cómo…<br>
             lo importante es avanzar juntos.
             </div>
             <h2>¿Cómo viajamos?</h2>
-            <div class="card" onclick="selectAnswer('coche')">🚗 A nuestro ritmo</div>
-            <div class="card" onclick="selectAnswer('tren')">🚆 En tren</div>
-            <div class="card" onclick="selectAnswer('avion')">✈️ En avión</div>
-        `;
-    }
-
-    else if(question === 3){
-        quiz.innerHTML = `
+            <div class="card" onclick="selectAnswer('coche')">🚗 Coche</div>
+            <div class="card" onclick="selectAnswer('otro')">✈️/🚆 Otro</div>
+            `;
+            break;
+        case 3:
+            setBackground("norteSur");
+            quiz.innerHTML=`
+            <div class="riddle">
+            ¿Nos vamos hacia el norte o el sur de España?
+            </div>
+            <h2>Región preferida</h2>
+            <div class="card" onclick="selectAnswer('norte')">🌲 Norte</div>
+            <div class="card" onclick="selectAnswer('sur')">☀️ Sur</div>
+            `;
+            break;
+        case 4:
+            setBackground("cielo");
+            quiz.innerHTML=`
             <div class="riddle">
             Al abrir los ojos,<br>
-            lo primero que veamos<br>
-            marcará cómo empieza el día.
+            lo primero que veamos marcará cómo empieza el día.
             </div>
             <h2>¿Qué miramos al despertar?</h2>
-            <div class="card" onclick="selectAnswer('cielo')">🌌 El cielo</div>
-            <div class="card" onclick="selectAnswer('montana')">⛰ La montaña</div>
-        `;
-    }
-
-    else if(question === 4){
-        setBackground("lujo");
-        quiz.innerHTML = `
+            <div class="card" onclick="selectAnswer('cielo')">🌌 Cielo</div>
+            <div class="card" onclick="selectAnswer('montana')">⛰ Montaña</div>
+            `;
+            break;
+        case 5:
+            setBackground("lujo");
+            quiz.innerHTML=`
             <div class="riddle">
-            No es cuestión de dinero,<br>
-            sino de cómo se siente.
+            No es cuánto cuesta,<br>
+            sino cómo se siente.
             </div>
             <h2>Nivel de experiencia</h2>
             <div class="card" onclick="selectAnswer('lujoso')">✨ Lujoso</div>
             <div class="card" onclick="selectAnswer('lujazo')">👑 Lujazo</div>
-        `;
-    }
-
-    else if(question === 5){
-        setBackground("misterio");
-        showRiddleFinal();
+            `;
+            break;
+        case 6:
+            setBackground("comida");
+            quiz.innerHTML=`
+            <div class="riddle">
+            ¿Qué tipo de comida nos apetece más en el viaje?
+            </div>
+            <h2>Comida favorita</h2>
+            <div class="card" onclick="selectAnswer('tapas')">🍷 Tapas y vino</div>
+            <div class="card" onclick="selectAnswer('mariscos')">🦞 Mariscos</div>
+            `;
+            break;
+        case 7:
+            setBackground("estilo");
+            quiz.innerHTML=`
+            <div class="riddle">
+            ¿Cómo nos gusta disfrutar el viaje?
+            </div>
+            <h2>Estilo romántico</h2>
+            <div class="card" onclick="selectAnswer('relajacion')">💖 Relajación</div>
+            <div class="card" onclick="selectAnswer('aventura')">🏞 Aventura</div>
+            `;
+            break;
+        case 8:
+            setBackground("misterio");
+            showRiddleFinal();
+            break;
     }
 }
 
 function selectAnswer(answer){
-
+    // Cambiar fondo según respuesta
     if(answer==="cielo") setBackground("cielo");
     if(answer==="montana") setBackground("montana");
-
     calculate(answer);
     question++;
-    setTimeout(showQuestion,400);
+    showQuestion();
 }
 
 function calculate(answer){
     switch(answer){
-        case "1dia": scores.monesterio+=2; scores.miluna+=2; break;
-        case "masdias": scores.carnota+=2; scores.burgo+=2; break;
-        case "tren": scores.monesterio+=1; scores.carnota+=1; break;
-        case "avion": scores.carnota+=2; break;
-        case "coche": scores.miluna+=1; scores.burgo+=2; break;
+        case "1noche": scores.miluna+=2; scores.burgo+=2; break;
+        case "2noches": scores.monesterio+=2; scores.carnota+=2; break;
+        case "coche": scores.monesterio+=1; scores.burgo+=2; break;
+        case "otro": scores.carnota+=2; scores.miluna+=1; break;
+        case "norte": scores.carnota+=2; scores.burgo+=1; break;
+        case "sur": scores.monesterio+=2; scores.miluna+=1; break;
         case "cielo": scores.monesterio+=2; scores.miluna+=2; break;
         case "montana": scores.carnota+=2; scores.burgo+=2; break;
-        case "lujoso": scores.miluna+=2; break;
-        case "lujazo": scores.miluna+=2; scores.carnota+=1; scores.monesterio+=1; scores.burgo+=1; break;
+        case "lujoso":
+        case "lujazo":
+            scores.monesterio+=1; scores.carnota+=1; scores.miluna+=1; scores.burgo+=1;
+            break;
+        case "tapas": scores.monesterio+=2; scores.miluna+=2; break;
+        case "mariscos": scores.carnota+=2; scores.burgo+=2; break;
+        case "relajacion": scores.monesterio+=2; scores.miluna+=2; scores.carnota+=1; scores.burgo+=1; break;
+        case "aventura": scores.carnota+=2; scores.burgo+=2; scores.monesterio+=0; scores.miluna+=0; break;
     }
 }
 
 function showRiddleFinal(){
     document.getElementById("quiz").innerHTML=`
+        <div class="lock-btn" onclick="openModal()">
+            🔒 Blockeado 🔒
+        </div>
         <h2>🔐 Antes de descubrirlo...</h2>
         <div class="riddle">
         No tengo boca pero puedo hablar,<br>
@@ -244,50 +325,57 @@ function showRiddleFinal(){
     `;
 }
 
+function openModal(){
+    document.getElementById("warningModal").style.display="flex";
+}
+
+function closeModal(){
+    document.getElementById("warningModal").style.display="none";
+}
+
+function forceReveal(){
+    window.location.href="https://www.stage.es/musicales/el-rey-leon";
+}
+
 function checkPassword(){
     const input=document.getElementById("password").value.toLowerCase().trim();
     if(input==="amor"){
-        cinematicReveal();
-    }else{
+        showResults();
+    } else {
         alert("Mmm… esa no es la respuesta 💭");
     }
 }
 
-function cinematicReveal(){
-
-    const destinations=[
-        {name:"Monesterio (Badajoz)", score:scores.monesterio},
-        {name:"Nidos de Carnota (Galicia)", score:scores.carnota},
-        {name:"Hotel Miluna (Toledo)", score:scores.miluna},
-        {name:"Burgo de Osma (Soria)", score:scores.burgo}
+function showResults(){
+    destinationsGlobal = [
+        {name:"Monesterio (Badajoz)", score:scores.monesterio, img:"resources/monesterio.jpg"},
+        {name:"Cabañinas do bosque (Galicia)", score:scores.carnota, img:"resources/nidos1.webp"},
+        {name:"Hotel Miluna (Toledo)", score:scores.miluna, img:"resources/miluna.jpg"},
+        {name:"Burgo de Osma (Soria)", score:scores.burgo, img:"resources/burgo.png"}
     ];
 
-    destinations.sort((a,b)=>b.score-a.score);
+    destinationsGlobal.sort((a,b)=>b.score-a.score);
+    const winner = destinationsGlobal[0];
 
-    setBackground("inicio");
-
-    document.getElementById("quiz").innerHTML=`
-        <div class="cinematic">
-            <h2>Y el destino elegido es...</h2>
-            <h1>✨ ${destinations[0].name} ✨</h1>
-            <p>Haz la maleta. Nos vamos 💛</p>
-            <button onclick='showRanking(${JSON.stringify(destinations)})'>Ver ranking completo</button>
-        </div>
+    let html=`
+        <h2>🏆 Nuestro destino ganador 🏆</h2>
+        <h1>✨ ${winner.name} ✨</h1>
+        <img id="winner-img" src="${winner.img}" alt="${winner.name}">
+        <p>Prepárate… porque esto se hace realidad 💛</p>
+        <button onclick="showRanking()">¿Quieres ver las otras opciones?</button>
     `;
+
+    document.getElementById("quiz").innerHTML = html;
 }
 
-function showRanking(destinations){
-
-    let html=`<h2>🏆 Tu ranking de destinos, ¿Estás segura de tus decisiones?</h2>`;
-
-    destinations.forEach((d,i)=>{
+function showRanking(){
+    let html=`<h2>🌟 Ranking completo de destinos 🌟</h2>`;
+    destinationsGlobal.forEach((d,i)=>{
         let medal=["🥇","🥈","🥉","💔"][i];
         html+=`<p>${medal} <strong>${d.name}</strong> — ${d.score} puntos</p>`;
     });
-
     document.getElementById("quiz").innerHTML=html;
 }
-
 </script>
 
 </body>
