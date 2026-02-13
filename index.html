@@ -254,8 +254,8 @@ function showQuestion(){
             ¿Qué tipo de comida nos apetece más en el viaje?
             </div>
             <h2>Comida favorita</h2>
-            <div class="card" onclick="selectAnswer('tapas')">🍷 Tapas y vino</div>
-            <div class="card" onclick="selectAnswer('mariscos')">🦞 Mariscos</div>
+            <div class="card" onclick="selectAnswer('tapas')">🍷 Tapas y cereza</div>
+            <div class="card" onclick="selectAnswer('mariscos')">🦞 Mariscos y carne</div>
             `;
             break;
         case 7:
@@ -308,9 +308,6 @@ function calculate(answer){
 
 function showRiddleFinal(){
     document.getElementById("quiz").innerHTML=`
-        <div class="lock-btn" onclick="openModal()">
-            🔒 Blockeado 🔒
-        </div>
         <h2>🔐 Antes de descubrirlo...</h2>
         <div class="riddle">
         No tengo boca pero puedo hablar,<br>
@@ -358,6 +355,9 @@ function showResults(){
     const winner = destinationsGlobal[0];
 
     let html=`
+        <div class="lock-btn" onclick="openModal()">
+            🔒 Blockeado 🔒
+        </div>
         <h2>🏆 Nuestro destino ganador 🏆</h2>
         <h1>✨ ${winner.name} ✨</h1>
         <img id="winner-img" src="${winner.img}" alt="${winner.name}">
