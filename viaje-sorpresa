@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuestra Próxima Aventura</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:'Montserrat', sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    text-align:center;
+}
+
+.container{
+    max-width:700px;
+    padding:40px;
+    animation:fade 0.6s ease-in-out;
+}
+
+h1,h2{
+    font-family:'Playfair Display', serif;
+}
+
+button{
+    display:block;
+    margin:12px auto;
+    padding:14px 30px;
+    border-radius:30px;
+    border:none;
+    font-size:16px;
+    cursor:pointer;
+    background:white;
+    color:#203a43;
+    transition:0.3s;
+    width:80%;
+}
+
+button:hover{
+    background:#f2f2f2;
+    transform:scale(1.03);
+}
+
+@keyframes fade{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+.ranking{
+    text-align:left;
+    margin-top:20px;
+}
+
+.gold{color:gold;}
+.silver{color:silver;}
+.bronze{color:#cd7f32;}
+</style>
+</head>
+<body>
+
+<div class="container" id="quiz">
+    <h1>¿Dónde nos escapamos?</h1>
+    <p>Hoy tú decides nuestra próxima aventura ✨</p>
+    <button onclick="nextQuestion()">Empezar</button>
+</div>
+
+<script>
+
+let question = 0;
+
+let scores = {
+    monesterio:0,
+    carnota:0,
+    miluna:0,
+    burgo:0
+};
+
+function nextQuestion(answer){
+
+    if(answer){
+        calculate(answer);
+    }
+
+    question++;
+
+    const quiz = document.getElementById("quiz");
+
+    switch(question){
+
+        case 1:
+            quiz.innerHTML = `
+                <h2>¿Cuánto tiempo escapamos?</h2>
+                <button onclick="nextQuestion('1dia')">🌙 Un día mágico</button>
+                <button onclick="nextQuestion('masdias')">🌄 Dos días o más</button>
+            `;
+        break;
+
+        case 2:
+            quiz.innerHTML = `
+                <h2>¿Cómo viajamos?</h2>
+                <button onclick="nextQuestion('coche')">🚗 A nuestro ritmo</button>
+                <button onclick="nextQuestion('tren')">🚆 En tren</button>
+                <button onclick="nextQuestion('avion')">✈️ En avión</button>
+            `;
+        break;
+
+        case 3:
+            quiz.innerHTML = `
+                <h2>¿Qué miramos al despertar?</h2>
+                <button onclick="nextQuestion('cielo')">🌌 El cielo</button>
+                <button onclick="nextQuestion('montana')">⛰ La montaña</button>
+            `;
+        break;
+
+        case 4:
+            quiz.innerHTML = `
+                <h2>Nivel de experiencia</h2>
+                <button onclick="nextQuestion('lujoso')">✨ Lujoso</button>
+                <button onclick="nextQuestion('lujazo')">👑 Lujazo</button>
+            `;
+        break;
+
+        case 5:
+            showResults();
+        break;
+    }
+}
+
+function calculate(answer){
+
+    switch(answer){
+
+        case "1dia":
+            scores.monesterio+=2;
+            scores.miluna+=2;
+        break;
+
+        case "masdias":
+            scores.carnota+=2;
+            scores.burgo+=2;
+        break;
+
+        case "tren":
+            scores.monesterio+=1;
+            scores.carnota+=1;
+        break;
+
+        case "avion":
+            scores.carnota+=2;
+        break;
+
+        case "coche":
+            scores.miluna+=1;
+            scores.burgo+=2;
+        break;
+
+        case "cielo":
+            scores.monesterio+=2;
+            scores.miluna+=2;
+        break;
+
+        case "montana":
+            scores.carnota+=2;
+            scores.burgo+=2;
+        break;
+
+        case "lujoso":
+            scores.miluna+=2;
+        break;
+
+        case "lujazo":
+            scores.miluna+=2;
+            scores.carnota+=1;
+            scores.monesterio+=1;
+            scores.burgo+=1;
+        break;
+    }
+}
+
+function showResults(){
+
+    const destinations = [
+        {name:"Monesterio (Badajoz)", score:scores.monesterio},
+        {name:"Nidos de Carnota (Galicia)", score:scores.carnota},
+        {name:"Hotel Miluna (Toledo)", score:scores.miluna},
+        {name:"Burgo de Osma (Soria)", score:scores.burgo}
+    ];
+
+    destinations.sort((a,b)=>b.score-a.score);
+
+    let rankingHTML = `
+        <h2>🏆 Tu ranking de destinos</h2>
+        <div class="ranking">
+    `;
+
+    destinations.forEach((d,i)=>{
+        let medal="";
+        if(i===0) medal="🥇";
+        if(i===1) medal="🥈";
+        if(i===2) medal="🥉";
+        if(i===3) medal="💔";
+
+        rankingHTML+= `<p>${medal} <strong>${d.name}</strong> — ${d.score} puntos</p>`;
+    });
+
+    rankingHTML+= `
+        </div>
+        <br>
+        <h3>✨ El destino ganador es:</h3>
+        <h1>${destinations[0].name}</h1>
+        <p>Prepárate… porque esto se hace realidad 💛</p>
+    `;
+
+    document.getElementById("quiz").innerHTML = rankingHTML;
+}
+
+</script>
+
+</body>
+</html>
