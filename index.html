@@ -16,14 +16,12 @@ body{
     justify-content:center;
     align-items:center;
     height:100vh;
-    overflow:hidden;
 }
 
 .container{
     width:90%;
     max-width:800px;
     text-align:center;
-    animation:fade 0.8s ease;
 }
 
 h1,h2{
@@ -32,12 +30,11 @@ h1,h2{
 
 .card{
     background: rgba(255,255,255,0.08);
-    backdrop-filter: blur(10px);
     padding:20px;
     margin:15px 0;
     border-radius:20px;
-    transition:0.3s;
     cursor:pointer;
+    transition:0.3s;
 }
 
 .card:hover{
@@ -53,19 +50,6 @@ button{
     cursor:pointer;
     margin-top:15px;
 }
-
-input{
-    padding:10px;
-    border-radius:20px;
-    border:none;
-    width:200px;
-    text-align:center;
-}
-
-@keyframes fade{
-    from{opacity:0; transform:translateY(20px);}
-    to{opacity:1; transform:translateY(0);}
-}
 </style>
 </head>
 <body>
@@ -73,66 +57,70 @@ input{
 <div class="container" id="quiz">
     <h1>✨ Nuestra próxima aventura ✨</h1>
     <p>Dicen que el destino no se encuentra… se elige.</p>
-    <button onclick="nextQuestion()">Empezar</button>
+    <button onclick="startQuiz()">Empezar</button>
 </div>
 
 <script>
 
-let question=0;
+let question = 1;
 
-let scores={
+let scores = {
     monesterio:0,
     carnota:0,
     miluna:0,
     burgo:0
 };
 
-function nextQuestion(answer){
+function startQuiz(){
+    showQuestion();
+}
 
-    if(answer){ calculate(answer); }
+function showQuestion(){
 
-    question++;
-    const quiz=document.getElementById("quiz");
+    const quiz = document.getElementById("quiz");
 
-    switch(question){
-
-        case 1:
-            quiz.innerHTML=`
-                <h2>¿Cuánto tiempo escapamos?</h2>
-                <div class="card" onclick="nextQuestion('1dia')">🌙 Un día mágico</div>
-                <div class="card" onclick="nextQuestion('masdias')">🌄 Dos días o más</div>
-            `;
-        break;
-
-        case 2:
-            quiz.innerHTML=`
-                <h2>¿Cómo viajamos?</h2>
-                <div class="card" onclick="nextQuestion('coche')">🚗 A nuestro ritmo</div>
-                <div class="card" onclick="nextQuestion('tren')">🚆 En tren</div>
-                <div class="card" onclick="nextQuestion('avion')">✈️ En avión</div>
-            `;
-        break;
-
-        case 3:
-            quiz.innerHTML=`
-                <h2>¿Qué miramos al despertar?</h2>
-                <div class="card" onclick="nextQuestion('cielo')">🌌 El cielo</div>
-                <div class="card" onclick="nextQuestion('montana')">⛰ La montaña</div>
-            `;
-        break;
-
-        case 4:
-            quiz.innerHTML=`
-                <h2>Nivel de experiencia</h2>
-                <div class="card" onclick="nextQuestion('lujoso')">✨ Lujoso</div>
-                <div class="card" onclick="nextQuestion('lujazo')">👑 Lujazo</div>
-            `;
-        break;
-
-        case 5:
-            showRiddle();
-        break;
+    if(question === 1){
+        quiz.innerHTML = `
+            <h2>¿Cuánto tiempo escapamos?</h2>
+            <div class="card" onclick="selectAnswer('1dia')">🌙 Un día mágico</div>
+            <div class="card" onclick="selectAnswer('masdias')">🌄 Dos días o más</div>
+        `;
     }
+
+    else if(question === 2){
+        quiz.innerHTML = `
+            <h2>¿Cómo viajamos?</h2>
+            <div class="card" onclick="selectAnswer('coche')">🚗 A nuestro ritmo</div>
+            <div class="card" onclick="selectAnswer('tren')">🚆 En tren</div>
+            <div class="card" onclick="selectAnswer('avion')">✈️ En avión</div>
+        `;
+    }
+
+    else if(question === 3){
+        quiz.innerHTML = `
+            <h2>¿Qué miramos al despertar?</h2>
+            <div class="card" onclick="selectAnswer('cielo')">🌌 El cielo</div>
+            <div class="card" onclick="selectAnswer('montana')">⛰ La montaña</div>
+        `;
+    }
+
+    else if(question === 4){
+        quiz.innerHTML = `
+            <h2>Nivel de experiencia</h2>
+            <div class="card" onclick="selectAnswer('lujoso')">✨ Lujoso</div>
+            <div class="card" onclick="selectAnswer('lujazo')">👑 Lujazo</div>
+        `;
+    }
+
+    else if(question === 5){
+        showRiddle();
+    }
+}
+
+function selectAnswer(answer){
+    calculate(answer);
+    question++;
+    showQuestion();
 }
 
 function calculate(answer){
@@ -176,4 +164,27 @@ function showResults(){
 
     const destinations=[
         {name:"Monesterio (Badajoz)", score:scores.monesterio},
-        {name:"Nidos de Carnota (Galici
+        {name:"Nidos de Carnota (Galicia)", score:scores.carnota},
+        {name:"Hotel Miluna (Toledo)", score:scores.miluna},
+        {name:"Burgo de Osma (Soria)", score:scores.burgo}
+    ];
+
+    destinations.sort((a,b)=>b.score-a.score);
+
+    let html=`<h2>🏆 Tu ranking de destinos</h2>`;
+
+    destinations.forEach((d,i)=>{
+        let medal=["🥇","🥈","🥉","💔"][i];
+        html+=`<p>${medal} <strong>${d.name}</strong> — ${d.score} puntos</p>`;
+    });
+
+    html+=`<h1 style="margin-top:30px;">✨ Nos vamos a ${destinations[0].name} ✨</h1>
+           <p>Prepárate… porque esto se hace realidad 💛</p>`;
+
+    document.getElementById("quiz").innerHTML=html;
+}
+
+</script>
+
+</body>
+</html>
