@@ -10,19 +10,31 @@
 body{
     margin:0;
     font-family:'Montserrat', sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
+    background-size:cover;
+    background-position:center;
+    transition:background-image 1s ease;
+}
+
+.overlay{
+    position:absolute;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.55);
+    z-index:0;
 }
 
 .container{
+    position:relative;
     width:90%;
     max-width:800px;
     text-align:center;
     animation:fade 0.8s ease;
+    z-index:2;
 }
 
 h1,h2{
@@ -32,12 +44,12 @@ h1,h2{
 .riddle{
     font-style:italic;
     margin-bottom:25px;
-    opacity:0.9;
+    opacity:0.95;
     line-height:1.6;
 }
 
 .card{
-    background: rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.12);
     padding:20px;
     margin:15px 0;
     border-radius:20px;
@@ -46,8 +58,8 @@ h1,h2{
 }
 
 .card:hover{
-    background: rgba(255,255,255,0.18);
-    transform:scale(1.03);
+    background: rgba(255,255,255,0.25);
+    transform:scale(1.05);
 }
 
 button{
@@ -67,13 +79,26 @@ input{
     text-align:center;
 }
 
+.cinematic h1{
+    font-size:48px;
+    margin-top:30px;
+    animation:fadeIn 2s ease forwards;
+}
+
 @keyframes fade{
     from{opacity:0; transform:translateY(20px);}
     to{opacity:1; transform:translateY(0);}
 }
+
+@keyframes fadeIn{
+    from{opacity:0;}
+    to{opacity:1;}
+}
 </style>
 </head>
 <body>
+
+<div class="overlay"></div>
 
 <div class="container" id="quiz">
     <h1>✨ Nuestra próxima aventura ✨</h1>
@@ -92,7 +117,24 @@ let scores = {
     burgo:0
 };
 
+const backgrounds = {
+    inicio:"https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    tiempo:"https://images.unsplash.com/photo-1491553895911-0055eca6402d",
+    transporte:"https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    cielo:"https://images.unsplash.com/photo-1444703686981-a3abbc4d4fe3",
+    montana:"https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+    lujo:"https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+    misterio:"https://images.unsplash.com/photo-1500534623283-312aade485b7"
+};
+
+function setBackground(type){
+    document.body.style.backgroundImage = `url(${backgrounds[type]})`;
+}
+
+setBackground("inicio");
+
 function startQuiz(){
+    question = 1;
     showQuestion();
 }
 
@@ -101,11 +143,11 @@ function showQuestion(){
     const quiz = document.getElementById("quiz");
 
     if(question === 1){
+        setBackground("tiempo");
         quiz.innerHTML = `
             <div class="riddle">
             No se compra, no se guarda,<br>
-            pero cuando lo tienes… vuela.<br>
-            A veces es breve y eterno a la vez.<br><br>
+            pero cuando lo tienes… vuela.<br><br>
             ¿Cuánto queremos que dure el nuestro?
             </div>
             <h2>¿Cuánto tiempo nos vamos?</h2>
@@ -115,6 +157,7 @@ function showQuestion(){
     }
 
     else if(question === 2){
+        setBackground("transporte");
         quiz.innerHTML = `
             <div class="riddle">
             Puede tener ruedas o alas,<br>
@@ -134,8 +177,7 @@ function showQuestion(){
             <div class="riddle">
             Al abrir los ojos,<br>
             lo primero que veamos<br>
-            marcará cómo empieza el día.<br><br>
-            ¿Miramos hacia arriba… o hacia el horizonte?
+            marcará cómo empieza el día.
             </div>
             <h2>¿Qué miramos al despertar?</h2>
             <div class="card" onclick="selectAnswer('cielo')">🌌 El cielo</div>
@@ -144,12 +186,11 @@ function showQuestion(){
     }
 
     else if(question === 4){
+        setBackground("lujo");
         quiz.innerHTML = `
             <div class="riddle">
             No es cuestión de dinero,<br>
-            sino de cómo se siente.<br>
-            Puede ser elegante…<br>
-            o absolutamente inolvidable.
+            sino de cómo se siente.
             </div>
             <h2>Nivel de experiencia</h2>
             <div class="card" onclick="selectAnswer('lujoso')">✨ Lujoso</div>
@@ -158,14 +199,19 @@ function showQuestion(){
     }
 
     else if(question === 5){
+        setBackground("misterio");
         showRiddleFinal();
     }
 }
 
 function selectAnswer(answer){
+
+    if(answer==="cielo") setBackground("cielo");
+    if(answer==="montana") setBackground("montana");
+
     calculate(answer);
     question++;
-    showQuestion();
+    setTimeout(showQuestion,400);
 }
 
 function calculate(answer){
@@ -201,13 +247,13 @@ function showRiddleFinal(){
 function checkPassword(){
     const input=document.getElementById("password").value.toLowerCase().trim();
     if(input==="amor"){
-        showResults();
+        cinematicReveal();
     }else{
         alert("Mmm… esa no es la respuesta 💭");
     }
 }
 
-function showResults(){
+function cinematicReveal(){
 
     const destinations=[
         {name:"Monesterio (Badajoz)", score:scores.monesterio},
@@ -218,15 +264,26 @@ function showResults(){
 
     destinations.sort((a,b)=>b.score-a.score);
 
+    setBackground("inicio");
+
+    document.getElementById("quiz").innerHTML=`
+        <div class="cinematic">
+            <h2>Y el destino elegido es...</h2>
+            <h1>✨ ${destinations[0].name} ✨</h1>
+            <p>Haz la maleta. Nos vamos 💛</p>
+            <button onclick='showRanking(${JSON.stringify(destinations)})'>Ver ranking completo</button>
+        </div>
+    `;
+}
+
+function showRanking(destinations){
+
     let html=`<h2>🏆 Tu ranking de destinos, ¿Estás segura de tus decisiones?</h2>`;
 
     destinations.forEach((d,i)=>{
         let medal=["🥇","🥈","🥉","💔"][i];
         html+=`<p>${medal} <strong>${d.name}</strong> — ${d.score} puntos</p>`;
     });
-
-    html+=`<h1 style="margin-top:30px;">✨ Nos vamos a ${destinations[0].name} ✨</h1>
-           <p>Prepárate… porque esto se hace realidad 💛</p>`;
 
     document.getElementById("quiz").innerHTML=html;
 }
